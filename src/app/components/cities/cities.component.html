@@ -1,0 +1,47 @@
+<h1>בחר יישובים בארץ </h1>
+<input type="text" placeholder="הזן שם יישוב לחיפוש" (keyup)="search($event)">
+<h3>יישובים שנבחרו:</h3>
+<div class="bg-light" id="selectedContainer">
+   <div *ngFor="let city of citiesSelected">
+      <span class="badge bg-secondary">{{city.cityName}}</span>
+   </div>
+</div>
+
+<table class="table table-hover">
+   <thead>
+      <tr>
+         <th sortable="name">שם יישוב
+            <button (click)="sortData()">
+               {{sortDescendingActive?sortAscendingTxt:sortDescendingTxt}}</button>
+         </th>
+         <th>פעולות</th>
+      </tr>
+   </thead>
+   <tbody>
+      <tr *ngFor="let city of citiesFiltered | slice: (page-1)*pageSize : pageSize*page; track city">
+         <ng-container *ngIf="city == cityForEdit; else viewCity">
+            <td>
+               <input type="text" [value]="city.cityName" #newValue>
+               <button class="btn btn-secondary" (click)="saveChanges(newValue.value)">שמור</button>
+            </td>
+         </ng-container>
+
+         <ng-template #viewCity>
+            <td>{{city.cityName}}</td>
+         </ng-template>
+         <td>
+            <button class="btn btn-secondary " (click)="add(city)">הוספה</button>
+            <button class="btn btn-secondary " (click)="edit(city)">עריכה</button>
+            <button class="btn btn-secondary " (click)="delete(city)">מחיקה</button>
+         </td>
+      </tr>
+
+      <tr class="table-info" *ngIf="noResults">{{noResultsMsg}}</tr>
+   </tbody>
+
+</table>
+
+<ngb-pagination [(page)]="page" [pageSize]="pageSize" 
+   [collectionSize]="citiesFiltered.length" [maxSize]="5"
+   [rotate]="true" [boundaryLinks]="true">
+</ngb-pagination>
